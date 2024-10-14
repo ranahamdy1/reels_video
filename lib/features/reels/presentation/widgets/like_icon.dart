@@ -4,6 +4,7 @@ class LikeIcon extends StatelessWidget {
   Future<int> tempFuture() async {
     return Future.delayed(const Duration(seconds: 1));
   }
+
   const LikeIcon({super.key});
 
   @override
@@ -12,9 +13,13 @@ class LikeIcon extends StatelessWidget {
       child: FutureBuilder(
         future: tempFuture(),
         builder: (context, snapShot) =>
-        snapShot.connectionState != ConnectionState.done
-        ? const Icon(Icons.favorite ,size: 110,): const SizedBox(),
-        ),
+            snapShot.connectionState != ConnectionState.done
+                ? const Icon(
+                    Icons.favorite,
+                    size: 110,
+                  )
+                : const SizedBox(),
+      ),
     );
   }
 }

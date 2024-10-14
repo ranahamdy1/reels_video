@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_swipe/flutter_swipe.dart';
-import 'package:reels_video/features/reels/controller/cubit/reels_cubit.dart';
-import 'package:reels_video/features/reels/controller/cubit/reels_state.dart';
+import 'package:reels_video/features/reels/controller/cubit/reels/reels_cubit.dart';
+import 'package:reels_video/features/reels/controller/cubit/reels/reels_state.dart';
 import 'content_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -32,7 +32,8 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     Swiper(
                       itemBuilder: (BuildContext context, int index) {
-                        return ContentScreen(src: "${cubit.data![index].video}");
+                        return ContentScreen(
+                            src: "${cubit.data![index].video}");
                       },
                       itemCount: cubit.data!.length,
                       scrollDirection: Axis.vertical,

@@ -5,7 +5,7 @@ import 'core/cache_helper.dart';
 import 'core/dio_helper.dart';
 import 'features/reels/presentation/home_screen.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await CacheHelper.init();
   await DioHelper.init();
@@ -24,4 +24,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

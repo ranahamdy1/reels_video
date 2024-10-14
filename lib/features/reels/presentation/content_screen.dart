@@ -1,72 +1,62 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:reels_video/features/reels/presentation/like_icon.dart';
-import 'package:video_player/video_player.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reels_video/features/reels/controller/cubit/content/content_cubit.dart';
+import 'package:reels_video/features/reels/controller/cubit/content/content_state.dart';
+import 'widgets/like_icon.dart';
 
-class ContentScreen extends StatefulWidget {
+class ContentScreen extends StatelessWidget {
   final String src;
-   const ContentScreen({super.key, required this.src});
-
-  @override
-  State<ContentScreen> createState() => _ContentScreenState();
-}
-
-class _ContentScreenState extends State<ContentScreen> {
-  VideoPlayerController? _videoPlayerController;
-  ChewieController? _chewieController;
-  bool _liked = false;
-
-  @override
-  void initState() {
-    super.initState();
-    initializePlayer();
-  }
-
-  Future initializePlayer() async{
-    _videoPlayerController = VideoPlayerController.network(widget.src);
-    await Future.wait([_videoPlayerController!.initialize()]);
-    _chewieController = ChewieController(
-        videoPlayerController: _videoPlayerController!,
-      autoPlay: true,
-      showControls: false,
-      looping: true,
-    );
-    setState(() {});
-  }
-
-  @override
-  void dispose() {
-    _videoPlayerController!.dispose();
-    _chewieController!.dispose();
-    super.dispose();
-  }
+  const ContentScreen({super.key, required this.src});
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        _chewieController != null && _chewieController!.videoPlayerController.value.isInitialized ?
-        GestureDetector(
-          onDoubleTap: (){
-            setState(() {
-              _liked = !_liked;
-            });
-          },
-            child: Chewie(controller: _chewieController!)):
-        const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 10),
-            Text("Loading.....")
-          ],
-        ),
-        if(_liked)
-          const Center(
-            child: LikeIcon(),
-          ),
-      ],
+    return BlocProvider(
+      create: (context) => ContentCubit(src),
+      child: BlocBuilder<ContentCubit, ContentState>(
+        builder: (context, state) {
+          final cubit = context.read<ContentCubit>();
+
+          if (state is ContentLoadingState) {
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 10),
+                  Text("Loading....."),
+                ],
+              ),
+            );
+          }
+
+          if (state is ContentFailedState) {
+            return Center(
+              child: Text(state.msg),
+            );
+          }
+
+          if (state is ContentSuccessState && cubit.chewieController != null) {
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                GestureDetector(
+                  onDoubleTap: () {
+                    cubit.toggleLike();
+                  },
+                  child: Chewie(controller: cubit.chewieController!),
+                ),
+                if (state.isLiked)
+                  const Center(
+                    child: LikeIcon(),
+                  ),
+              ],
+            );
+          }
+
+          return const SizedBox.shrink();
+        },
+      ),
     );
   }
 }
