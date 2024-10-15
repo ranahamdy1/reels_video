@@ -32,7 +32,18 @@ class ContentScreen extends StatelessWidget {
 
           if (state is ContentFailedState) {
             return Center(
-              child: Text(state.msg),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(state.msg),
+                  ElevatedButton(
+                    onPressed: () {
+                      cubit.initializePlayer(src);
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
             );
           }
 
